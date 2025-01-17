@@ -33,4 +33,5 @@ def calc_model_info(object_id, output_path, model_path):
     # Save the calculated info about the object models.
     inout.save_json(output_path, models_info)
 
-calc_model_info(1, "/mnt/foundpose/dataset_bop/lmo/models/models_info2.json", "/mnt/foundpose/dataset_bop/lmo/models/obj_000001.ply")
+dataset_path = config.datasets_path
+calc_model_info(1, dataset_path + "/lmo/models/models_info.json", dataset_path + "/lmo/models/obj_000001.ply")
