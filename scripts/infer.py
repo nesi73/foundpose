@@ -133,6 +133,7 @@ def infer(opts: InferOpts) -> None:
         # If local (object) IDs are not specified, synthesize templates for all objects
         # in the specified dataset.
         object_lids = bop_model_props["obj_ids"]
+        object_lids = [1] #TODO: remove, parametrizar
 
     # Get properties of the test split of the specified dataset.
     bop_test_split_props = dataset_params.get_split_params(
@@ -765,7 +766,7 @@ def infer(opts: InferOpts) -> None:
                             object_pose_m2w_coarse=pose_m2w_coarse,
                             pose_eval_dict_coarse=pose_eval_dict_coarse,
                             # For paper visualizations:
-                            vis_for_paper=opts.vis_for_paper,
+                            vis_for_paper=0,
                             extractor=extractor,
                         )
                         timer.elapsed("Time for visualization")
@@ -786,19 +787,19 @@ def infer(opts: InferOpts) -> None:
                         inout.save_im(vis_path, vis_grid)
                         logger.info(f"Visualization saved to {vis_path}")
 
-                        if opts.debug:
-                            pts_path = os.path.join(
-                                output_dir,
-                                f"{bop_chunk_id}_{bop_im_id}_{object_lid}_{inst_j}_{hypothesis_id}_vertice_error.ply",
-                            )
-                            vis_util.vis_pointcloud_error(
-                                repre_np,
-                                pose_m2w,
-                                object_pose_m2w_gt,
-                                camera_c2w,
-                                0,
-                                pts_path,
-                            )
+                        # if opts.debug:
+                        #     pts_path = os.path.join(
+                        #         output_dir,
+                        #         f"{bop_chunk_id}_{bop_im_id}_{object_lid}_{inst_j}_{hypothesis_id}_vertice_error.ply",
+                        #     )
+                        #     vis_util.vis_pointcloud_error(
+                        #         repre_np,
+                        #         pose_m2w,
+                        #         object_pose_m2w_gt,
+                        #         camera_c2w,
+                        #         0,
+                        #         pts_path,
+                        #     )
 
         # Empty unused GPU cache variables.
         if device == "cuda":
