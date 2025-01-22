@@ -98,14 +98,16 @@ def read_json(path):
         return json.load(file) 
     
 def get_transformation(data):
+    transformations = []
     
-    R = np.array(data[0]["R"])
-    t = np.array(data[0]["t"])
-    
-    T = np.hstack((R, t.reshape(-1, 1)))  # Concatenar R y t
-    T = np.vstack((T, np.array([0, 0, 0, 1])))  # Añadir la fila [0, 0, 0, 1]
-
-    return T
+    for d in data:
+        R = np.array(d["R"])
+        t = np.array(d["t"])
+        
+        T = np.hstack((R, t.reshape(-1, 1)))  # Concatenar R y t
+        T = np.vstack((T, np.array([0, 0, 0, 1])))  # Añadir la fila [0, 0, 0, 1]
+        transformations.append(T)
+    return transformations
 
 def get_K(data):
   return np.array([[data["fx"], 0, data["cx"]], [0, data["fy"], data["cy"]], [0,0,1]])
@@ -116,14 +118,15 @@ def calculate_bbox_3d(path):
     return to_origin, np.stack([-extents/2, extents/2], axis=0).reshape(2,3)
 
 
-to_origin, bbox = calculate_bbox_3d("/mnt/foundpose/dataset_irc/lmo/models/obj_000001.ply")
+import sys
+to_origin, bbox = calculate_bbox_3d(f"/mnt/foundpose/datasets/{sys.argv[1]}/lmo/models/obj_000001.ply")
 
-img = cv2.imread("/mnt/foundpose/dataset_irc/lmo/test/000001/rgb/000001.png")
-K = get_K(read_json("/mnt/foundpose/dataset_irc/lmo/camera.json"))
-T  =get_transformation(read_json("/mnt/foundpose/dataset_irc/inference/lmo_v1/1/estimated-poses.json"))
+img = cv2.imread(f"/mnt/foundpose/datasets/{sys.argv[1]}/lmo/test/000001/rgb/000001.png")
+K = get_K(read_json(f"/mnt/foundpose/datasets/{sys.argv[1]}/lmo/camera.json"))
+transformations  =get_transformation(read_json(f"/mnt/foundpose/datasets/{sys.argv[1]}/inference/lmo_v1/1/estimated-poses.json"))
 
-
-center_pose = T@np.linalg.inv(to_origin)
-img= draw_posed_3d_box(K, img, center_pose, bbox)
-img = draw_xyz_axis(img, center_pose, 0.1, K, thickness=3, transparency=0, is_input_rgb=True)
-cv2.imwrite("prueba2.jpg", img)
+for T in transformations:
+    center_pose = T@np.linalg.inv(to_origin)
+    img= draw_posed_3d_box(K, img, center_pose, bbox)
+    img = draw_xyz_axis(img, center_pose, 0.1, K, thickness=3, transparency=0, is_input_rgb=True)
+cv2.imwrite("./results/imagen.png", img)

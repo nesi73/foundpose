@@ -254,7 +254,6 @@ def load_opts_from_json_or_command_line(
     parser = argparse.ArgumentParser()
     parser.add_argument("--opts-path", type=str, default=None)
     args = parser.parse_known_args()[0]
-    args.opts_path = "configs/infer/lmo.json"
 
     # Load options from a JSON file if `--opts-path` is specified.
     if args.opts_path is not None:

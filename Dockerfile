@@ -15,8 +15,15 @@ RUN apt-get update && apt-get install -y \
     lsb-release \
     python3-pip \
     git \
+    python3-setuptools \
+    python3-wheel \
+    pkg-config \
+    libcairo2-dev \ 
     && add-apt-repository ppa:deadsnakes/ppa \
     && apt-get update \
-	&& pip install -r requirements
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --upgrade pip \
+    && pip3 install meson==0.63.3 \
+	&& pip3 install --no-cache-dir -r requirements.txt
 
 CMD ["bash"]
